@@ -1,0 +1,30 @@
+stages:
+  - test
+  - package
+
+workflow:
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+
+test_1:
+  stage: test
+  image: openjdk:11-jdk-slim
+  script:
+    - cd backend
+    - pwd
+    - ls src/main/resources/
+    - echo -e "1\n2\n3" > src/main/resources/config.properties
+    - echo "$EMAIL_USERNAME" >> src/main/resources/config.properties
+    - echo "$EMAIL_PASSWORD" >> src/main/resources/config.properties
+    - cat src/main/resources/config.properties
+    - ./mvnw test
+
+package:jdk11:
+    stage: package
+    script:
+      - mvn -DskipTests package 
+    artifacts: 
+      paths:
+        - target/*.jar
+    only:
+      - master

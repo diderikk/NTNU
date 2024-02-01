@@ -1,0 +1,43 @@
+stages:
+  - triggers
+  - deploy
+
+# Only runs pipelines if merge request has been created or is open for that branch
+workflow:
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: $CI_MERGE_REQUEST
+    - when: never
+
+# Triggers a frontend CI, if changes have been made in that folder
+trigger_frontend:
+  stage: triggers
+  trigger:
+    include: frontend/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+        - frontend/**/*
+
+# Triggers a backend CI, if changes have been made in that folder
+trigger_backend:
+  stage: triggers
+  trigger:
+    include: backend/.gitlab-ci.yml
+    strategy: depend
+  rules:
+    - changes:
+        - backend/**/*
+        
+pages:
+  stage: deploy
+  image: node:latest
+  rules:
+    - changes:
+        - API.yml
+  script:
+    - npm install -g redoc-cli
+    - redoc-cli bundle -o public/index.html API.yml
+  artifacts:
+    paths:
+      - public

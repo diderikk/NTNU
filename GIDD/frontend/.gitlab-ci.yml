@@ -1,0 +1,40 @@
+image: node:14.16
+
+stages:
+  - install
+  - test
+  - lint
+
+workflow:
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+
+install:
+  stage: install
+  script:
+    - cd frontend
+    - npm install
+  artifacts:
+    paths:
+      - frontend/node_modules
+
+unit test:
+  stage: test
+  script:
+    - cd frontend
+    - 'echo {\"googleAPIKey\": \""$GOOGLE_API_KEY"\" } > config.json'
+    - npm run test:unit
+
+build:
+  stage: test
+  script:
+    - cd frontend
+    - 'echo {\"googleAPIKey\": \""$GOOGLE_API_KEY"\" } > config.json'
+    - npm run build
+
+prettier:
+  stage: lint
+  script:
+    - cd frontend
+    - npm install --global prettier
+    - prettier --write .
