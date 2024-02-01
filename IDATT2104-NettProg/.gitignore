@@ -1,0 +1,7 @@
+*.class
+*.docx
+Datakom/
+*.out
+.vscode
+node_modules/
+package-lock.json
