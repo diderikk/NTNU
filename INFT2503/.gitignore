@@ -1,0 +1,7 @@
+.vscode/
+
+*.tar.gz
+
+*.out
+
+*.md
